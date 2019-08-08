@@ -94,6 +94,17 @@ int main(int argc,char ** argv) {
 
   boost::filesystem::path out_root(out_file);
   create_directory(out_root);
+  std::ofstream csv(out_file + ".csv");
+  if (false == csv.is_open()) {
+    cerr<<"can't open output csv file!"<<endl;
+    return EXIT_FAILURE;
+  }
+  std::ofstream json(out_file + ".json");
+  if (false == json.is_open()) {
+    cerr<<"can't open output json file!"<<endl;
+    return EXIT_FAILURE;
+  }
+  ptree list;
   int count = 0;
   // generate wave and label files.
   for (auto& label: labels) {
@@ -113,10 +124,27 @@ int main(int argc,char ** argv) {
     args.push_back("pcm_s16le");
     args.push_back("-ar");
     args.push_back("44100");
-    args.push_back((out_root / (lexical_cast<string>(count++) + ".wav")).string());
+    args.push_back((out_root / (lexical_cast<string>(count) + ".wav")).string());
     child c(search_path("ffmpeg"),args);
     c.wait();
+
+    // write csv
+    csv << count << "|" << sentence<<endl;
+
+    // append json
+    ptree transcription;
+    transcription.put("original", sentence);
+    transcription.put("clean", sentence);
+    list.add_child(lexical_cast<string>(count) + ".wav", transcription);
+  
+    count++;
   }
+  // write json
+  stringstream buffer;
+  write_json(buffer, list);
+  json << buffer.str();
+  csv.close();
+  json.close();
 
   return EXIT_SUCCESS;
 }
