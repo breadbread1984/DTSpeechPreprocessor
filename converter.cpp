@@ -135,7 +135,7 @@ int main(int argc,char ** argv) {
     ptree transcription;
     transcription.put("original", sentence);
     transcription.put("clean", sentence);
-    list.add_child(lexical_cast<string>(count) + ".wav", transcription);
+    list.add_child(string_path<string, id_translator<string> >(lexical_cast<string>(count) + ".wav", '\\'), transcription);
   
     count++;
   }
