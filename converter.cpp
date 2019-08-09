@@ -129,7 +129,7 @@ int main(int argc,char ** argv) {
     c.wait();
 
     // write csv
-    csv << count << "|" << sentence<<endl;
+    csv << count << "|" << sentence << "|" << sentence <<endl;
 
     // append json
     ptree transcription;
